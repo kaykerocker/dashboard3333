@@ -12,21 +12,20 @@ SHEET_NAME = "Remessas"
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
 
 # Verificar se estamos rodando localmente ou no Streamlit Cloud
-if os.getenv("GOOGLE_CREDENTIALS"):  # Se existir variável de ambiente
+if os.path.exists("credenciais.json"):  # Se o arquivo local existir, use ele
+    credentials = Credentials.from_service_account_file("credenciais.json", scopes=SCOPES)
+    st.write("✅ Usando credenciais locais (credenciais.json)")
+elif "GOOGLE_CREDENTIALS" in os.environ:  # Se a variável de ambiente existir, use ela
     try:
+        st.write("✅ Variável GOOGLE_CREDENTIALS encontrada! Iniciando autenticação...")
         service_account_info = json.loads(os.getenv("GOOGLE_CREDENTIALS"))
         credentials = Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
+        st.write("✅ Autenticação bem-sucedida!")
     except Exception as e:
-        st.error(f"Erro ao carregar GOOGLE_CREDENTIALS: {e}")
-        st.stop()
-elif os.path.exists("credenciais.json"):  # Se existir arquivo local
-    try:
-        credentials = Credentials.from_service_account_file("credenciais.json", scopes=SCOPES)
-    except Exception as e:
-        st.error(f"Erro ao carregar credenciais.json: {e}")
+        st.error(f"❌ Erro ao carregar GOOGLE_CREDENTIALS: {str(e)}")
         st.stop()
 else:
-    st.error("Erro: Nenhuma credencial do Google encontrada. Configure 'GOOGLE_CREDENTIALS' ou adicione 'credenciais.json'.")
+    st.error("❌ Nenhuma credencial do Google encontrada. Configure 'GOOGLE_CREDENTIALS' no GitHub ou adicione 'credenciais.json' localmente.")
     st.stop()
 
 
