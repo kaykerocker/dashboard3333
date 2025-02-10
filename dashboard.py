@@ -54,7 +54,7 @@ with top_col2:
     st.title("Dashboard de Remessas")
 
 # Exibindo o DataFrame
-st.dataframe(st.session_state.df, width=1200, height=600)
+st.dataframe(st.session_state.df, width=1201, height=600)
 
 # Formulário para adicionar novas remessas
 st.header("Adicionar Nova Remessa")
