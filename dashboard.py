@@ -1,21 +1,6 @@
-import pandas as pd
+import pandas as pd 
 import datetime
 import streamlit as st
-
-# Inicializando os dados na sessão
-if 'df' not in st.session_state:
-    data = {
-        'ID Remessa': [],
-        'ID Tarefa': [],
-        'Projeto': [],
-        'Editor': [],
-        'Status': [],
-        'Valor Pago (R$)': [],
-        'Data Recebimento': [],
-        'Prazo': [],
-        'Data Pagamento': []
-    }
-    st.session_state.df = pd.DataFrame(data)
 
 # Link atualizado da logo
 LOGO_URL = "https://disdigital.com.br/_next/static/media/logo-colorida.3bed5ba4.webp"
@@ -27,8 +12,34 @@ with top_col1:
 with top_col2:
     st.title("Dashboard de Remessas")
 
-# Exibindo o DataFrame
-st.dataframe(st.session_state.df, width=1200, height=600)
+# Inicializando os dados no Streamlit para persistência entre interações
+if 'df' not in st.session_state:
+    data = {
+        'ID Remessa': [1, 2, 3],
+        'ID Tarefa': ['86a6j39pd', 'a1b2c3d4e5', 'z9y8x7w6v5'],
+        'Projeto': ['Projeto A', 'Projeto B', 'Projeto C'],
+        'Editor': [None, None, None],
+        'Status': ['Sem editor', 'Sem editor', 'Sem editor'],
+        'Valor Pago (R$)': [None, None, None],
+        'Data Recebimento': ['01/02/2024', '02/02/2024', '03/02/2024'],
+        'Prazo': ['10/02/2024', '15/02/2024', '20/02/2024'],
+        'Data Pagamento': [None, None, None]
+    }
+    st.session_state.df = pd.DataFrame(data)
+
+if 'tarefas' not in st.session_state:
+    st.session_state.tarefas = pd.DataFrame(columns=['ID Remessa', 'Editor Designado', 'Descrição'])
+
+# Definindo os possíveis status
+status_opcoes = ['Sem editor', 'A editar', 'Editando', 'Revisar', 'Ajustando', 'Braz', 'Fechado', 'A gravar']
+
+st.session_state.df['Status'] = pd.Categorical(st.session_state.df['Status'], categories=status_opcoes, ordered=True)
+
+st.session_state.df['Valor Pago (R$)'] = pd.to_numeric(st.session_state.df['Valor Pago (R$)'], errors='coerce')
+st.session_state.df['Prazo'] = pd.to_datetime(st.session_state.df['Prazo'], format='%d/%m/%Y', errors='coerce')
+
+# Exibindo o DataFrame sem modificar os IDs já existentes
+st.markdown(st.session_state.df.to_html(escape=False, index=False), unsafe_allow_html=True)
 
 # Formulário para adicionar novas remessas
 st.header("Adicionar Nova Remessa")
@@ -59,7 +70,7 @@ if st.button("Adicionar Remessa"):
 st.header("Atualizar Remessa")
 id_atualizar = st.number_input("ID da Remessa para Atualizar", min_value=1, step=1)
 editor_atualizar = st.text_input("Editor")
-status_atualizar = st.selectbox("Status", ['Sem editor', 'A editar', 'Editando', 'Revisar', 'Ajustando', 'Braz', 'Fechado', 'A gravar'])
+status_atualizar = st.selectbox("Status", status_opcoes)
 valor_atualizar = st.number_input("Valor Pago (R$)", min_value=0.0, step=0.01)
 data_pagamento_atualizar = st.date_input("Data de Pagamento").strftime('%d/%m/%Y')
 
