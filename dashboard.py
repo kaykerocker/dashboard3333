@@ -25,7 +25,7 @@ elif "GOOGLE_CREDENTIALS" in os.environ:  # Se a variável de ambiente existir, 
         st.error(f"❌ Erro ao carregar GOOGLE_CREDENTIALS: {str(e)}")
         st.stop()
 else:
-    st.error("❌ Nenhuma credencial do Google encontrada. Configure 'GOOGLE_CREDENTIALS' no GitHub ou adicione 'credenciais.json' localmente.")
+    st.error("❌❌ Nenhuma credencial do Google encontrada. Configure 'GOOGLE_CREDENTIALS' no GitHub ou adicione 'credenciais.json' localmente.")
     st.stop()
 
 
